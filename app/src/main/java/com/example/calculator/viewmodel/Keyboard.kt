@@ -3,24 +3,30 @@ package com.example.calculator.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.calculator.App
 import com.example.calculator.R
 import com.example.calculator.model.IProcessor
 
 interface Keyboard {
 
-    fun enableAC(enabled: Boolean)
+    fun enableACKey(enabled: Boolean)
     fun pressKey(key: Key)
 }
 
-class KeyboardViewModel : ViewModel(), Keyboard {
+class KeyboardViewModel(private val processor: IProcessor) : ViewModel(), Keyboard {
 
-    lateinit var processor: IProcessor
+    class Factory(private val processor: IProcessor) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return KeyboardViewModel(processor) as T
+        }
+    }
 
     private val _keys = MutableLiveData(KeyboardSetup.setup)
     val keys: LiveData<MutableList<Key>> = _keys
 
-    override fun enableAC(enabled: Boolean) {
+    override fun enableACKey(enabled: Boolean) {
         _keys.value?.set(KeyboardSetup.clearKeyPosition, if (enabled) Keys.AllClear else Keys.Clear)
         _keys.value = _keys.value // To notify Observers via setValue()
     }
@@ -36,12 +42,12 @@ private object KeyboardSetup {
         Keys.Seven, Keys.Eight, Keys.Nine, Keys.Multiply,
         Keys.Four, Keys.Five, Keys.Six, Keys.Minus,
         Keys.One, Keys.Two, Keys.Three, Keys.Plus,
-        Keys.Zero, Keys.Point, Keys.Equal
+        Keys.Point, Keys.Zero, Keys.Equal
     )
     val clearKeyPosition: Int = setup.indexOf(Keys.AllClear)
 }
 
-object Keys {
+object Keys { // This singleton class depends on App's context.
     val One = Key(App.res.getString(R.string.one), KeyType.Digit)
     val Two = Key(App.res.getString(R.string.two), KeyType.Digit)
     val Three = Key(App.res.getString(R.string.three), KeyType.Digit)
@@ -74,7 +80,7 @@ object Keys {
     )
 }
 
-class Key(val label: String, val type: KeyType)
+data class Key(val label: String, val type: KeyType)
 
 enum class KeyType {
     Digit,

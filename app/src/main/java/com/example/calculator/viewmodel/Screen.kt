@@ -3,6 +3,7 @@ package com.example.calculator.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 interface Screen {
 
@@ -12,15 +13,19 @@ interface Screen {
     fun clearAll()
 }
 
-class ScreenViewModel : ViewModel(), Screen {
+class ScreenViewModel(private val keyboard: Keyboard) : ViewModel(), Screen {
 
-    lateinit var keyboard: Keyboard
+    class Factory(private val keyboard: Keyboard) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            @Suppress("UNCHECKED_CAST")
+            return ScreenViewModel(keyboard) as T
+        }
+    }
 
     private val _currentLine = MutableLiveData("")
     val currentLine: LiveData<String> = _currentLine
 
-    private val _historyLines =
-        MutableLiveData(mutableListOf<String>()) //TODO create a model for history lines
+    private val _historyLines = MutableLiveData(mutableListOf<String>())
     val historyLines: LiveData<MutableList<String>> = _historyLines
 
     override fun renderCurrentLine(line: String) {
@@ -31,13 +36,13 @@ class ScreenViewModel : ViewModel(), Screen {
         _historyLines.value?.add("$line = $result")
         _historyLines.value = _historyLines.value // To notify Observers via setValue()
 
-        keyboard.enableAC(false)
+        keyboard.enableACKey(false)
     }
 
     override fun clearCurrentLine() {
         _currentLine.value = ""
 
-        keyboard.enableAC(true)
+        keyboard.enableACKey(true)
     }
 
     override fun clearAll() {

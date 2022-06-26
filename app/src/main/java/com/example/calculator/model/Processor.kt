@@ -1,6 +1,9 @@
 package com.example.calculator.model
 
-import com.example.calculator.viewmodel.*
+import com.example.calculator.viewmodel.Key
+import com.example.calculator.viewmodel.Keyboard
+import com.example.calculator.viewmodel.Keys
+import com.example.calculator.viewmodel.Screen
 import com.fathzer.soft.javaluator.DoubleEvaluator
 
 interface IProcessor {
@@ -14,42 +17,39 @@ object Processor : IProcessor {
     lateinit var screen: Screen
     lateinit var keyboard: Keyboard
 
-    private var line = ""
+    private val line: String
+        get() {
+            var result = ""
+            for (k in keysList) {
+                result += k.label
+            }
+            return result
+        }
     private var keysList = mutableListOf<Key>()
 
     override fun processKey(key: Key) {
-        if (keysList.isEmpty()) {
-            if (key.type == KeyType.Digit) keysList.add(key)
-            if (key == Keys.AllClear) {
+        when (key) {
+            Keys.Equal -> {
+                try {
+                    val result = trimTrailingZero(calculate(line).toString())
+                    check(line != result)
+                    screen.addHistoryLine(line, result)
+                    keysList = stringToKeysList(result)
+                    screen.renderCurrentLine(result)
+                } catch (_: Throwable) {
+                    // User has wrote invalid expression.
+                }
+                return
+            }
+            Keys.AllClear -> {
                 screen.clearAll()
                 keysList.clear()
             }
-        } else when (key.type) {
-            KeyType.Digit -> if (keysList.last() == Keys.Percent) {
-                keysList.addAll(listOf(Keys.Multiply, key))
-            } else keysList.add(key)
-            KeyType.Function ->
-                if (keysList.last().type == KeyType.Function && keysList.last() != Keys.Percent)
-                    keysList[keysList.lastIndex] = key
-                else keysList.add(key)
-            KeyType.Action -> if (key == Keys.Equal) {
-                val result = trimTrailingZero(calculate(line).toString())
-                screen.addHistoryLine(line, result)
-                keysList = stringToKeyList(result)
-                screen.renderCurrentLine(result)
-                return
-            } else if (key == Keys.AllClear) {
-                screen.clearAll()
-                keysList.clear()
-            } else if (key == Keys.Clear) {
+            Keys.Clear -> {
                 screen.clearCurrentLine()
                 keysList.clear()
             }
-        }
-
-        line = ""
-        for (k in keysList) {
-            line += k.label
+            else -> keysList.add(key)
         }
 
         screen.renderCurrentLine(line)
@@ -68,15 +68,15 @@ object Processor : IProcessor {
         ).replace(Keys.Divide.label.first(), DoubleEvaluator.DIVIDE.symbol.first())
     }
 
-    private fun stringToKeyList(expression: String): MutableList<Key> {
-        val keyList = mutableListOf<Key>()
+    private fun stringToKeysList(expression: String): MutableList<Key> {
+        val result = mutableListOf<Key>()
         for (c in expression) {
             Keys.KeysList.find { it.label.first() == c }.let {
                 if (it != null)
-                    keyList.add(it)
+                    result.add(it)
             }
         }
-        return keyList
+        return result
     }
 
     private fun trimTrailingZero(value: String): String {

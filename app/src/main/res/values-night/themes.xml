@@ -1,16 +1,32 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.Calculator" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Calculator" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/mustard</item>
+        <item name="colorPrimaryVariant">@color/mustard</item>
+        <item name="colorOnPrimary">@color/metal</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/mustard_alpha</item>
+        <item name="colorSecondaryVariant">@color/mustard_alpha</item>
+        <item name="colorOnSecondary">@color/mustard</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@color/metal</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MaterialButton.Common" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/metal_light</item>
+    </style>
+
+    <style name="MaterialButton.Highlighted" parent="Widget.Material3.Button.TextButton">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="MaterialButton.Special" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorPrimary</item>
     </style>
 </resources>

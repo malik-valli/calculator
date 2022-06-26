@@ -11,13 +11,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:itemCount="5"
-        tools:listitem="@layout/keyboard_key" />
+        app:spanCount="@integer/num_of_keyboard_columns"
+        tools:itemCount="15"
+        tools:listitem="@layout/key_highlighted" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/screen"
@@ -28,6 +30,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:itemCount="4"
-        tools:listitem="@layout/screen_line" />
+        tools:listitem="@layout/history_line" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/key"
-    android:layout_width="80dp"
-    android:layout_height="80dp"
-    style="@style/Widget.MaterialComponents.Button.TextButton"
-    tools:ignore="SpeakableTextPresentCheck" />
